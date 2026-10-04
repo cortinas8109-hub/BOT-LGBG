@@ -717,23 +717,3 @@ task.spawn(function()
         DoScan(true)
     end
 end)
-
-local function PickTarget(current)
-    local best, bestScore = nil, math.huge
-    local now = tick()
-    for _, e in ipairs(Enemies) do
-        if e.dist <= CFG.ChaseRange and not e.ff and not (CFG.SkipTeammates and e.friend) then
-            local score = e.dist + e.hpPct * 0.15
-            if e.char == S.LastAttacker and now - S.LastAttackerT < 5 and e.dist < 25 then score -= 12 end
-            if e.char == current then score -= 8 end
-            if score < bestScore then
-                bestScore, best = score, e.char
-            end
-        end
-    end
-    return best
-end
-
-local function DistToTarget()
-    local _, _, root = GetChar()
-    local tr = S.Target and S.Target:FindFirstChild
