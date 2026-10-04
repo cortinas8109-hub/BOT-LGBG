@@ -576,22 +576,39 @@ local function NearestDist()
         if e.dist < m then m = e.dist end
     end
     return m
-end    if S.Target and S.Target.Parent then
+end    
+-- ═════════ DUMP (reporte de datos) ═════════
+local function BuildDump()
+    local L = {}
+    local function add(s) L[#L + 1] = s end
+
+    add("=== DUMP LGBG BOT v6 ===")
+    add("Modo entrada: " .. tostring(Input.Mode))
+    add("OffsetY: " .. tostring(Input.OffY + CFG.OffsetY))
+    add("Botones calibrados: " .. tostring(calibrated))
+    add("Animaciones aprendidas: " .. tostring(animCount))
+
+    if S.Target and S.Target.Parent then
         add("-- TARGET: " .. S.Target.Name)
         local attrs = {}
-        for k2, v in pairs(S.Target:GetAttributes()) do attrs[#attrs + 1] = k2 .. "=" .. tostring(v) end
+        for k2, v in pairs(S.Target:GetAttributes()) do
+            attrs[#attrs + 1] = k2 .. "=" .. tostring(v)
+        end
         add("attrs: " .. table.concat(attrs, ", "))
     end
 
     add("-- ANIMACIONES ENEMIGAS APRENDIDAS (nombre|id|largo|vistas|golpes|dano%)")
     local arr = {}
-    for id, r in pairs(AnimDB) do arr[#arr + 1] = {id = id, r = r} end
+    for id, r in pairs(AnimDB) do
+        arr[#arr + 1] = {id = id, r = r}
+    end
     table.sort(arr, function(a, b) return a.r.dmg > b.r.dmg end)
     for i = 1, math.min(#arr, 12) do
         local r = arr[i].r
         add(("%s|%s|%.2f|%d|%d|%.0f"):format(
             tostring(r.n), tostring(arr[i].id):sub(-14), r.len or 0, r.seen, r.hits, r.dmg * 100))
     end
+
     local text = table.concat(L, "\n")
     if #text > 6000 then text = text:sub(1, 6000) end
     return text
